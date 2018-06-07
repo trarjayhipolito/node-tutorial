@@ -720,3 +720,188 @@ You can check your can send a GET request in the `/api/user` and check if the us
 ![enter image description here](https://lh3.googleusercontent.com/9N7RJhiE3SD4lR2QJuUgkrH-M05L40VXgz-qOnoDsTkh9f8R6iQ14WjlrLuFkTytr7CWrX9E8Fo)
 
 Voila! The user with the id of 35 can't be seen anymore.
+
+## Setting Up Swagger UI
+
+First we will install `swagger-ui-express` that will display our API in swagger-ui.
+
+    $ npm install swagger-ui-express swagger-node-express
+
+Once installed, we can now call our `swagger-ui-express` module in the `server.js`.
+
+	//server.js
+    const swaggerUi = require('swagger-ui-express')
+
+Then, we will use `swaggerUi`  as a middleware with the path `/api-docs`, call swaggerUi.serve and swaggerUi.setup.
+
+	const swagger =  require('./swagger')
+    server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagger));
+
+The `swagger` in the `swaggerUi.setup` parameter is a JSON file that we will creating.
+
+    "swagger":"2.0",
+    
+    "info":{
+	    "title":"Sample Swagger",
+	    "description":"Documentation and testing of your APIs",
+	    "version":"1.0"	
+	}
+	
+`"swagger"` **Required.** Provides metadata about the API. The metadata can be used by the clients if needed.
+
+`"info"` **Required.** Provides metadata about the API. The metadata can be used by the clients if needed.
+
+![enter image description here](https://lh3.googleusercontent.com/tTnTFxvVT9npwwtYjuS7wwVPlsrmv7RwWKP8h_pFTw28Mc5WsWP6gT0mlONLhIwTdydt3sLxKc0)
+
+Note: [JSON objects](https://www.w3schools.com/js/js_json_objects.asp) are surrounded by curly braces {}. Every key/value pair is separated by comma.
+
+    "produces":[
+    	"application/json"
+    ]
+
+`"produces"` A list of MIME types the APIs can produce. This is global to all APIs but can be overridden on specific API calls. Value MUST be as described under Mime Types.
+
+    "paths":{
+	    //.. path here
+    }
+
+`"path"` **Required.** The available paths and operations for the API.
+
+    "definitions": {
+	    //.. model here
+    }
+
+`"definition"` An object to hold data types produced and consumed by operations.
+
+Now, under the inside the `definition` key. We will create a schema for `User` with the type of `object` and `properties` of our schema in the database.
+
+    "User": {
+	    "type": "object",
+	    "properties": {
+		    "user_id": {
+			    "type": "integer"
+		    },
+		    "user_fname": {
+			    "type": "string"
+		    },
+		    "user_lname": {
+			    "type": "string"
+		    },
+		    "user_isdel": {
+			    "type": "integer"
+		    }
+	    }
+    }
+
+Save it and go to your browser to see the User schema.
+
+![enter image description here](https://lh3.googleusercontent.com/E0Iyjav4jGl6p7hirJtVGXAaEmzJN1sxPB4rrKzS8YWB1RZyX6TfDonJYrjNuffD99Zdu9DFCW8)
+
+After that, inside the `path` key. We will key/value pair with an object as a value of our user endpoint in the `api.js`.
+
+    "/api/user/{userId}":{
+	    "get":{
+		    "summary":"generate a single user",
+			"operationId":"generate a single user",
+			"tags":[
+				"User"
+			],
+			"description":"This will generate a single user.",
+			"parameters":[
+				{
+					"in":"path",
+					"name":"userId",
+					"type":"integer",
+					"required":true,
+					"description":"We need to input user id"
+				}
+			],
+			"responses":{
+
+			}
+	    }
+	},
+
+	"/api/user":{
+		"get":{
+			"summary":"generate all users",
+			"operationId":"generate all users",
+			"tags":[
+				"User"
+			],
+			"description":"This will all the users in the system.",
+			"responses":{
+
+			}
+		},
+		"post":{
+			"summary":"create a user",
+			"operationId":"create a user",
+			"tags":[
+			"User"
+			],
+			"description":"This will create a new user in the system. Only the user_fname and user_lname is required in the field.",
+			"parameters":[
+				{
+				"in":"body",
+				"name":"body",
+				"required":true,
+				"description":"Body",
+				"schema": {
+					"$ref": "#/definitions/User"
+					}
+				}
+			],
+			"responses":{
+
+			}
+		},
+		"put":{
+			"summary":"update and delete user",
+			"operationId":"update and delete a user",
+			"tags":[
+			"User"
+			],
+			"description":"This will update a user in the system. If the user_isdel is 1, the user with that id will be deleted.",
+			"parameters":[
+			{
+				"in":"body",
+				"name":"body",
+				"required":true,
+				"description":"Body",
+				"schema": {
+					"$ref": "#/definitions/User"
+				}
+			}
+			],
+			"responses":{
+
+			}
+		}
+	}
+
+Note: As a reference read the [Swagger Path Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#pathsObject)
+
+![enter image description here](https://lh3.googleusercontent.com/dvtN8DB7Z-ZPmAbeoEWRm7Frt_VvPglZvtT2FPjtP5x7rtadlhllPi50dVHuybaL5ZRj72IWxFk)
+
+All the user endpoint.
+
+![enter image description here](https://lh3.googleusercontent.com/F2_KLIzsC8gAk363tf98ShmN5bLlNBx5vaGF6nXjUJEi9zQ4vNQgpkZmxLsNSjnRUNDLrAYbAAU)
+
+This is the **GET REQUEST** to `/api/user/:userId`. You can try it out see it its working! Just click **Try It out** and fill out the required parameter and press **EXECUTE**. A response will pop up in the bottom of that section.
+
+![enter image description here](https://lh3.googleusercontent.com/vNWMrYTPYDZy2zmw522YD9mKnu-CE-DrlS4YDwibsegQ_4dQC7rhqW3xgc4iGrpQ9CSnci30kmk)
+
+This is the **GET REQUEST** to `/api/user`. You can try it out see it its working! Just click **Try It out** press **EXECUTE**. A response will pop up in the bottom of that section.
+
+![enter image description here](https://lh3.googleusercontent.com/mQESvAWltcncHczJwK-lo4HU5S8x5mgKiPJqJgCrog79a4cZR0q8xVeO6A-5r2fexqsvDsZLDNo)
+
+This is the **POST REQUEST** to `/api/user/:userId`. You can try it out see it its working! Just click **Try It out** and fill out the required body and press **EXECUTE**. A response will pop up in the bottom of that section.
+
+![enter image description here](https://lh3.googleusercontent.com/j327iFPBWh3QdSo0yPVA3PZpGGxG7SwvVQ8ZdLRuGEe0y-4qZUdBj78or-fmW0zxtp0QNTA4Z4s)
+
+This is the **PUT REQUEST** to `/api/user/:userId`. You can try it out see it its working! Just click **Try It out** and fill out the required body and press **EXECUTE**. A response will pop up in the bottom of that section.
+
+For reference, go to [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md)
+
+That's it ! I hope you learn the basics of Express and Swagger using Node JS.

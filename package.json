@@ -13,8 +13,7 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "mysql": "^2.15.0",
-    "swagger-node-express": "^2.0",
-    "swagger-ui-express": "^2.0.1",
+    "swagger-ui-express": "^3.0.9",
     "winston": "^2.4.2",
     "winston-daily-rotate-file": "^1.7.2"
   },
