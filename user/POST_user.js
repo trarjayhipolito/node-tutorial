@@ -59,11 +59,11 @@ function  insertUser(req, res, _dbConnection, callback) {
 	    }
     ],
     //main callback function
-    function (err, userId) {
+    function (err, user) {
 	    if (err) {
 		    callback(err, null)
 	    } else {
-		    resp = {status: "200", userId: userId};
+		    resp = {status: "200", user: user};
 		    callback(null, resp);
 	    }
     })

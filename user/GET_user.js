@@ -40,10 +40,10 @@ function getUser(params, callback) {
     var userId = params.userId;
 
     //sql command
-    var sql = 'SELECT * FROM user_tbl WHERE user_isdel = 0 AND user_id = ' + userId;
+    var sql = 'SELECT * FROM user_tbl WHERE user_isdel = 0 AND user_id = ?';
 
      //executing sql
-     dbConnection.query(sql, function(err, recordset){
+     dbConnection.query(sql, userId, function(err, recordset){
         //check error on fetching
         if (err) {
             console.log('error: getUser Error : ' + err);
@@ -67,6 +67,7 @@ function getUser(params, callback) {
         //return User record
         callback(null,userRes);
     });
+    
 
 }
 
