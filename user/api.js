@@ -34,7 +34,7 @@ module.exports.init = function init (server, dbConnection) {
 
     //Update user
     //---------------
-    server.put('/api/user', function (req, res, next) {
+    server.put('/api/user/:userId', function (req, res, next) {
         PUT_user.PUT_user(req, res, dbConnection, next)
         console.log('info', 'done with PUT_user.PUT_user')
     })

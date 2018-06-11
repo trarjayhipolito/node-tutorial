@@ -625,8 +625,8 @@ Then we will add the values to be UPDATED to the sqlQuery if the values are not 
 	    sqlQuery +=  ` user_fname = ?`
 	    sqlData.push(body.user_fname)
 	    
-	    //check if the body object we count is above 2 then we will add a comma
-	    if(count >  2){
+	    //check if the body object we count is above 1 then we will add a comma
+	    if(count >  1){
 		    sqlQuery +=  `,`
 		    count--;
 	    }
@@ -636,8 +636,8 @@ Then we will add the values to be UPDATED to the sqlQuery if the values are not 
 	    sqlQuery +=  ` user_lname = ? `
 	    sqlData.push(body.user_lname)
 	    
-	    //check if the body object we count is above 2 then we will add a comma
-	    if(count >  2){
+	    //check if the body object we count is above 1 then we will add a comma
+	    if(count >  1){
 		    sqlQuery +=  `,`
 		    count--;
 	    }
@@ -649,8 +649,8 @@ Then we will add the values to be UPDATED to the sqlQuery if the values are not 
 	    sqlQuery +=  ` user_isdel = ? `
 	    sqlData.push(body.user_isdel)
 	    
-	    //check if the body object we count is above 2 then we will add a comma
-	    if(count >  2){
+	    //check if the body object we count is above 1 then we will add a comma
+	    if(count >  1){
 		    sqlQuery +=  `,`
 		    count--;
 	    }
@@ -659,7 +659,8 @@ Then we will add the values to be UPDATED to the sqlQuery if the values are not 
 After that we will add the WHERE command in the sqlQuery so the query will know which user_id will be updated.
 
     //add WHERE query in which id we will be updating
-    sqlData.push(body.user_id)
+    //req.params.userId will be fetching the userId
+    sqlData.push(req.params.userId)
     sqlQuery +=  ` WHERE user_id = ? `
 
 Then we will run the command that have a callback checking it there is an error occur while executing the command.
@@ -667,7 +668,7 @@ Then we will run the command that have a callback checking it there is an error 
     _dbConnection.query(sqlQuery, sqlData, function (err, result) {
     	if (err) {
     		let err = {}
-    		console.log('error', TAG +  'updateUser Err : '  + err)
+    		console.log('error: updateUser Err : '  + err)
     		err.status  =  '500'
     		err.message  =  'Internal Server Error'
     		res.send(err)
@@ -687,7 +688,7 @@ Inside the init function.
 
     //Update user
     //---------------
-    server.put('/api/user', function (req, res, next) {
+    server.put('/api/user/:userId', function (req, res, next) {
     	PUT_user.PUT_user(req, res, dbConnection, next)
     	console.log('info', 'done with PUT_user.PUT_user')
     })
@@ -695,15 +696,15 @@ Inside the init function.
 
 Okay! Now we will be testing it using Postman.
 
-Switch the request to PUT and the enter the url `localhost:8080/api/user`.
+Switch the request to PUT and the enter the url `localhost:8080/api/user/:userId`.
 
-As for me I will changed the value of the user with the id of 35
+As for me I will changed the value of the params `userId` to 35, and set the `user_fname` or `user_lname` in the body.
 
-![enter image description here](https://lh3.googleusercontent.com/SyXEFFxBn69hAqs9WcDpfwGjQGS6mcBeoAlWaX1JW2F5-LvM4dgkbQx0NQHwvLm-HuGELl-xmas)
+![enter image description here](https://lh3.googleusercontent.com/Q3uKnYlsrNptcRH1_LGcVayb6yw7swWxel9Wy029AJHyMr-Q7EfXhe9Jikt_cK0T7lCS77J4rm8)
 
 Then press send to see if it is update.
 
-![enter image description here](https://lh3.googleusercontent.com/fpPFWX8-qodDd7CAt4wCYwydt-2oDMBt4W6dCh1HAunII7XVGTsw0QcaWv9GEWUmW0hcGXco97k)
+![enter image description here](https://lh3.googleusercontent.com/RTMHeRI-4uwaOlqN4uJIPgg7dsNl0qL1YAV7_QcyQOebzUnaF6bnh0Cy5r1yu6Y16vedgNteR2k)
 
 Congrats! You successfully  update the user!
 
@@ -711,13 +712,13 @@ You can check your **MySql Workbench** if the user_id you inputted is updated.
 
 ### Deleting User
 
-You can just simply send a PUT request to the `localhost:8080/api/user` with the `"user_isdel": 1` in the body and send it.
+You can just simply send a PUT request to the `localhost:8080/api/user/:userId` with the `"user_isdel": 1` in the body and send it.
 
-![enter image description here](https://lh3.googleusercontent.com/IgnJjb8Gl51HjkhM5Rl2qNW8fdb-oyUP5Vd7T2j_DeWvZX_Wq1msIqOJFoHbQfJwGNrVOPfkHMg)
+![enter image description here](https://lh3.googleusercontent.com/IG10zoKQ2kaXe-cwqQ5zAJr0TOSXuv-9slZI9-z5LP13Ep28n6h2XmwL2zfMo_gOD2SQSQZu26o)
 
 You can check your can send a GET request in the `/api/user` and check if the user is still there.
 
-![enter image description here](https://lh3.googleusercontent.com/9N7RJhiE3SD4lR2QJuUgkrH-M05L40VXgz-qOnoDsTkh9f8R6iQ14WjlrLuFkTytr7CWrX9E8Fo)
+![enter image description here](https://lh3.googleusercontent.com/E-Y_7MDFLmyUSt55VLQt7NZa9j8IagsWU6_Jjk6RxgjYfKecY0_DMnj5YhU7bWLA7o0wmfBJwFU)
 
 Voila! The user with the id of 35 can't be seen anymore.
 
@@ -819,7 +820,36 @@ After that, inside the `path` key. We will key/value pair with an object as a va
 			"responses":{
 
 			}
-	    }
+	    },
+	    "put":{
+			"summary":"update and delete user",
+			"operationId":"update and delete a user",
+			"tags":[
+			"User"
+			],
+			"description":"This will update a user in the system. If the user_isdel is 1, the user with that id will be deleted.",
+			"parameters":[
+				{
+					"in":"path",
+					"name":"userId",
+					"type":"integer",
+					"required":true,
+					"description":"We need to input user id"
+				},
+				{
+				"in":"body",
+				"name":"body",
+				"required":true,
+				"description":"Body",
+				"schema": {
+					"$ref": "#/definitions/User"
+					}
+				}
+			],
+			"responses":{
+
+			}
+		}
 	},
 
 	"/api/user":{
@@ -855,52 +885,41 @@ After that, inside the `path` key. We will key/value pair with an object as a va
 			"responses":{
 
 			}
-		},
-		"put":{
-			"summary":"update and delete user",
-			"operationId":"update and delete a user",
-			"tags":[
-			"User"
-			],
-			"description":"This will update a user in the system. If the user_isdel is 1, the user with that id will be deleted.",
-			"parameters":[
-			{
-				"in":"body",
-				"name":"body",
-				"required":true,
-				"description":"Body",
-				"schema": {
-					"$ref": "#/definitions/User"
-				}
-			}
-			],
-			"responses":{
-
-			}
 		}
 	}
 
 Note: As a reference read the [Swagger Path Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#pathsObject)
 
-![enter image description here](https://lh3.googleusercontent.com/dvtN8DB7Z-ZPmAbeoEWRm7Frt_VvPglZvtT2FPjtP5x7rtadlhllPi50dVHuybaL5ZRj72IWxFk)
+![enter image description here](https://lh3.googleusercontent.com/lJZB-c8psxs_NCj5Zp9huiX0D7Vh2i3zY7MS_eH69jPcXuEbyt1JUFl7eS8ZuNv-DHHuD0_xee0)
 
-All the user endpoint.
+> All the user endpoint.
 
 ![enter image description here](https://lh3.googleusercontent.com/F2_KLIzsC8gAk363tf98ShmN5bLlNBx5vaGF6nXjUJEi9zQ4vNQgpkZmxLsNSjnRUNDLrAYbAAU)
 
-This is the **GET REQUEST** to `/api/user/:userId`. You can try it out see it its working! Just click **Try It out** and fill out the required parameter and press **EXECUTE**. A response will pop up in the bottom of that section.
+> This is the **GET REQUEST** to `/api/user/:userId`. You can try it out
+> see it its working! Just click **Try It out** and fill out the
+> required parameter and press **EXECUTE**. A response will pop up in
+> the bottom of that section.
 
 ![enter image description here](https://lh3.googleusercontent.com/vNWMrYTPYDZy2zmw522YD9mKnu-CE-DrlS4YDwibsegQ_4dQC7rhqW3xgc4iGrpQ9CSnci30kmk)
 
-This is the **GET REQUEST** to `/api/user`. You can try it out see it its working! Just click **Try It out** press **EXECUTE**. A response will pop up in the bottom of that section.
+> This is the **GET REQUEST** to `/api/user`. You can try it out see it
+> its working! Just click **Try It out** press **EXECUTE**. A response
+> will pop up in the bottom of that section.
 
 ![enter image description here](https://lh3.googleusercontent.com/mQESvAWltcncHczJwK-lo4HU5S8x5mgKiPJqJgCrog79a4cZR0q8xVeO6A-5r2fexqsvDsZLDNo)
 
-This is the **POST REQUEST** to `/api/user/:userId`. You can try it out see it its working! Just click **Try It out** and fill out the required body and press **EXECUTE**. A response will pop up in the bottom of that section.
+> This is the **POST REQUEST** to `/api/user/:userId`. You can try it
+> out see it its working! Just click **Try It out** and fill out the
+> required body and press **EXECUTE**. A response will pop up in the
+> bottom of that section.
 
-![enter image description here](https://lh3.googleusercontent.com/j327iFPBWh3QdSo0yPVA3PZpGGxG7SwvVQ8ZdLRuGEe0y-4qZUdBj78or-fmW0zxtp0QNTA4Z4s)
+![enter image description here](https://lh3.googleusercontent.com/OaKQASJJEIGMSu7LqW0o-iNX9PWcXbEeov8ZPV6BPMfgAGB42xGi2XvQX6Bcn8lDecNiUWyzkqY)
 
-This is the **PUT REQUEST** to `/api/user/:userId`. You can try it out see it its working! Just click **Try It out** and fill out the required body and press **EXECUTE**. A response will pop up in the bottom of that section.
+> This is the **PUT REQUEST** to `/api/user/:userId`. You can try it out
+> see it its working! Just click **Try It out** and fill out the
+> required body and press **EXECUTE**. A response will pop up in the
+> bottom of that section.
 
 For reference, go to [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md)
 

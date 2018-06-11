@@ -53,7 +53,7 @@ function  insertUser(req, res, _dbConnection, callback) {
 			    if (err) {
 				    callback(err, null);
 			    } else {
-				    callback(null, result.insertId);
+				    callback(null, result);
 			    }
 		    });
 	    }
@@ -80,12 +80,16 @@ function  putUser(dbConnection, body, callback) {
     'VALUES (?, ?, 0)';
 
     dbConnection.query(sqlQuery, sqlData, function(err, result) {
-    if (err) {
-    logger.log('error', TAG +  'putUser Err : '  + err)
-    callback(err, null);
-    } else {
-    callback(null, result);
-    }
+		if (err) {
+			logger.log('error', TAG +  'putUser Err : '  + err)
+			callback(err, null);
+		} else {
+			id = result.insertId
+			sqlQuery = 'SELECT * FROM user_tbl WHERE user_id = ' + id
+			dbConnection.query(sqlQuery, function(err, result){
+				callback(null, result);
+			})
+		}
     });
 }
 //--------------
