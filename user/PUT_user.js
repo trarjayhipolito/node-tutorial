@@ -71,7 +71,6 @@ function  updateUser (req, res, _dbConnection, next) {
             err.message  =  'Internal Server Error'
             res.send(err)
         } else {
-            console.log (sqlQuery)
 			sqlQuery = 'SELECT * FROM user_tbl WHERE user_id = ' + id
 			_dbConnection.query(sqlQuery, function(err, result){
 				let resp = {status: '200', user: result}
