@@ -55,7 +55,7 @@ function  getAllUser(callback) {
             var allUser = {
             user_id: recordset[index].user_id,
             user_fname: recordset[index].user_fname,
-            user_lname: recordset[index].user_fname,
+            user_lname: recordset[index].user_lname,
             };
             
             //push record in allUserList array

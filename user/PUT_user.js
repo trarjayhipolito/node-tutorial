@@ -62,7 +62,7 @@ exports.PUT_user  =  function (req, res, _dbConnection, next) {
     //add WHERE query in which id we will be updating
     sqlData.push(id)
     sqlQuery +=  ` WHERE user_id = ? `
-  
+
     _dbConnection.query(sqlQuery, sqlData, function (err, result) {
         if (err) {
             let err = {}
@@ -71,12 +71,11 @@ exports.PUT_user  =  function (req, res, _dbConnection, next) {
             err.message  =  'Internal Server Error'
             res.send(err)
         } else {
-  
-      sqlQuery = 'SELECT * FROM user_tbl WHERE user_id = ' + id
-      _dbConnection.query(sqlQuery, function(err, result){
-        let resp = {status: '200', user: result}
+            sqlQuery = 'SELECT * FROM user_tbl WHERE user_id = ' + id
+            _dbConnection.query(sqlQuery, function(err, result){
+                let resp = {status: '200', user: result}
                 res.send(resp)  
-      })
+            })
         }
     })
   }
