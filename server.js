@@ -36,3 +36,9 @@ function loadModules (server, dbConnection, callback) {
     modules.init(server, dbConnection)
     callback(null, { status: 'success' })
 }
+
+function stop() {
+  server.close();
+}
+
+module.exports = {server, connection}

@@ -11,6 +11,10 @@ database  = {
     }
 }
 
+if(process.env.NODE_ENV == "dev") {
+    database.database = "dev";
+}
+
 /**
     * Initialize database connection
     */

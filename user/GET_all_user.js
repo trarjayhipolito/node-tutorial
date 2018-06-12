@@ -20,6 +20,7 @@ exports.GET_all_user  =  function(req, res, _dbConnection){
         if (allUser.length  !==  0) {
         resp = {status: "200", allUser: allUser};
         } else {
+        res.status(204);
         resp = {status: "204", message: "No Data Available!"};
         }
         

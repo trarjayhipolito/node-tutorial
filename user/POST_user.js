@@ -11,6 +11,7 @@ exports.POST_user = function(req, res, _dbConnection){
             }
             res.send(err);
         } else {
+          res.status(201);
             res.send(result);
         }
     });
