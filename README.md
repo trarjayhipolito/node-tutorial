@@ -57,16 +57,16 @@ First, go to the `package.json` file and in the `"main":"index.js"`, change the 
     	res.send('Hello World')
     })
   
-    //server listening to port 8080
-    server.listen('8080', function () {
-    	console.log('Listening to post 8080')
+    //server listening to port 8081
+    server.listen('8081', function () {
+    	console.log('Listening to post 8081')
     })
 
 After adding this code in the `server.js` file, execute this in your terminal:
 
     $ nodemon
     
-After that, **nodemon** will run the `server.js` file in the url `localhost:8080`.  Go to [locahost:8080/hello](locahost:8080/hello).
+After that, **nodemon** will run the `server.js` file in the url `localhost:8081`.  Go to [locahost:8081/hello](locahost:8081/hello).
 
 ![enter image description here](https://lh3.googleusercontent.com/mFVzOmfz5U24Dwgzdy5EdE5rNYaDHR5cghIzGew4xi8zkTrj6oMYyu0dHnvFpuhL-dqyRxp6xcw)
 
@@ -165,8 +165,8 @@ This will initialize mysql driver to the variable `connection`. Then we will cal
 
      connection.init((conn) => {
     	 //we will place our `server.listen` here
-    	 server.listen('8080', function () {
-    	 console.log('Listening to post 8080')
+    	 server.listen('8081', function () {
+    	 console.log('Listening to post 8081')
     	 })
      })
 
@@ -302,7 +302,7 @@ This is the `loadModule` function
 
 Now you can run the application using `nodemon`.
 
-Go to your **Postman** and enter the url [`http://localhost:8080/api/user`](http://localhost:8080/api/user).
+Go to your **Postman** and enter the url [`http://localhost:8081/api/user`](http://localhost:8081/api/user).
 
 ![enter image description here](https://lh3.googleusercontent.com/pU4EyyxOQ8pqqdAf-FZMA7ZgN-0LGiIZz3iK3tJM_dHGUl8pVV4SYjjw4zIrrVZgXyytOstHpII)
 
@@ -401,11 +401,11 @@ And inside the `init` function, add this block of codes there:
        	console.log('info: done with GET_user.GET_user')
     })
 	
-Now you can go to your Postman and enter [`http://localhost:8080/api/user/1`](http://localhost:8080/api/user/2)
+Now you can go to your Postman and enter [`http://localhost:8081/api/user/1`](http://localhost:8081/api/user/2)
 
 ![enter image description here](https://lh3.googleusercontent.com/wUN63xRtKyZRG7mzOdNcvztEQJJCqxCb_cuZHnxAO37Md2WI-8bgEPQ7OJ7jfk9pyqR1qD3yDZ8)
 
-Note: In my case, I input [`localhost:8080/api/user/2`](localhost:8080/api/user/2) on my Postman.
+Note: In my case, I input [`localhost:8081/api/user/2`](localhost:8081/api/user/2) on my Postman.
 
 ### User POST request
 
@@ -556,7 +556,25 @@ Place this code above our `server.js` file:
     server.use(bodyParser.json());
     server.use(bodyParser.urlencoded({extended: true}));
 
-Open your Postman, switch to POST and enter [`localhost:8080/api/user`](localhost:8080/api/user).
+	server.use(function (req, res, next) {
+		// Website you wish to allow to connect when we make our Vue.js UI
+		res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8081');
+
+		// Request methods you wish to allow
+		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+		// Request headers you wish to allow
+		res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+		// Set to true if you need the website to include cookies in the requests sent
+		// to the API (e.g. in case you use sessions)
+		res.setHeader('Access-Control-Allow-Credentials', true);
+
+		// Pass to next layer of middleware
+		next();
+	});
+
+Open your Postman, switch to POST and enter [`localhost:8081/api/user`](localhost:8081/api/user).
 
 Go to the Header, make sure that the key will be `content-type` and the value is `application/json`.
 
@@ -666,16 +684,19 @@ After that we will add the WHERE command in the sqlQuery so the query will know 
 Then we will run the command that have a callback checking it there is an error occur while executing the command.
 
     _dbConnection.query(sqlQuery, sqlData, function (err, result) {
-    	if (err) {
-    		let err = {}
-    		console.log('error: updateUser Err : '  + err)
-    		err.status  =  '500'
-    		err.message  =  'Internal Server Error'
-    		res.send(err)
-    	} else {
-    		let resp = {status: '200', user: sqlData}
-    		res.send(resp)
-    	}
+        if (err) {
+            let err = {}
+            console.log('error: updateUser Err : '  + err)
+            err.status  =  '500'
+            err.message  =  'Internal Server Error'
+            res.send(err)
+        } else {
+            sqlQuery = 'SELECT * FROM user_tbl WHERE user_id = ' + id
+            _dbConnection.query(sqlQuery, function(err, result){
+                let resp = {status: '200', user: result}
+                res.send(resp)  
+            })
+        }
     })
 
 Note: We used the prepared statement [prepared statements](https://github.com/sidorares/node-mysql2#using-prepared-statements) again.
@@ -696,7 +717,7 @@ Inside the init function.
 
 Okay! Now we will be testing it using Postman.
 
-Switch the request to PUT and the enter the url `localhost:8080/api/user/:userId`.
+Switch the request to PUT and the enter the url `localhost:8081/api/user/:userId`.
 
 As for me I will changed the value of the params `userId` to 35, and set the `user_fname` or `user_lname` in the body.
 
@@ -712,7 +733,7 @@ You can check your **MySql Workbench** if the user_id you inputted is updated.
 
 ### Deleting User
 
-You can just simply send a PUT request to the `localhost:8080/api/user/:userId` with the `"user_isdel": 1` in the body and send it.
+You can just simply send a PUT request to the `localhost:8081/api/user/:userId` with the `"user_isdel": 1` in the body and send it.
 
 ![enter image description here](https://lh3.googleusercontent.com/IG10zoKQ2kaXe-cwqQ5zAJr0TOSXuv-9slZI9-z5LP13Ep28n6h2XmwL2zfMo_gOD2SQSQZu26o)
 

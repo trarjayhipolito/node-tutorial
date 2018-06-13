@@ -11,8 +11,8 @@ database  = {
     }
 }
 
-if(process.env.NODE_ENV == "dev") {
-    database.database = "dev";
+if(process.env.NODE_ENV == "development") {
+    database.database = "development";
 }
 
 /**
