@@ -24,7 +24,7 @@ Install:
 ## Installation
 In your terminal, go to your folder and execute:
 
-    $ npm init
+	$ npm init
     
 Just enter all the way down, and in your folder, you can see the `package.json` file and click it.
 Under the license in `package.json` file.
@@ -43,24 +43,28 @@ Let’s start out by brainstorming about what we want to build. All we want to b
 
 Start out by adding a new file in the root directory of the project. Give it a name of `server.js`.
 
-    // server.js
-    const express =  require('express');
-    const server =  express();
+```js
+// server.js
+const express =  require('express');
+const server =  express();
+```
 
 With this added you’re ready to start adding your first hello world app.
 
 First, go to the `package.json` file and in the `"main":"index.js"`, change the `index.js` to `server.js` so when we run it using **nodemon**, the `server.js` will be the one running.
 
-    //server.js
-    //display hello world
-    server.get('/hello', (req, res) => {
-    	res.send('Hello World')
-    })
-  
-    //server listening to port 8081
-    server.listen('8081', function () {
-    	console.log('Listening to post 8081')
-    })
+```js
+//server.js
+//display hello world
+server.get('/hello', (req, res) => {
+	res.send('Hello World')
+})
+
+//server listening to port 8081
+server.listen('8081', function () {
+	console.log('Listening to post 8081')
+})
+```
 
 After adding this code in the `server.js` file, execute this in your terminal:
 
@@ -98,77 +102,89 @@ Note: Open your **MySql Workbench** and create a schema named `test`, inside cre
 ```
 Create a folder name `config` and inside that, create a file named `db-mysql.js`.
 
-    // db-mysql.js 
-    var mysql = require('mysql');
+```js
+// db-mysql.js 
+var mysql = require('mysql');
+```
 
 First, we will declare your config to `db-mysql.js`.
 
-    // db-mysql.js
-    database  = {
-	    user: 'root',
-	    password: '',
-	    server: '127.0.0.1',
-	    database: 'test',
-	    port: 3306,
-	    options: {
-	    encrypt: true
-	    }
-    }
+```js
+// db-mysql.js
+database  = {
+	user: 'root',
+	password: '',
+	server: '127.0.0.1',
+	database: 'test',
+	port: 3306,
+	options: {
+	encrypt: true
+	}
+}
+```
 
 This is the default config unless you configured your config, feel free to change it.
 
 Secondly we will initialize our database connection, add this code to your `db-mysql.js`.
 
-    /**
-    * Initialize database connection
-    */
-    exports.init  =  function (connect_callback) {
-    	console.log("Initialising module db-mysql");
-    	initializeConnection(connect_callback);
-    };
+```js
+/**
+* Initialize database connection
+*/
+exports.init  =  function (connect_callback) {
+	console.log("Initialising module db-mysql");
+	initializeConnection(connect_callback);
+};
+```
 
 This is the `initializeConnection` function.
 
-    // Function call for database connection
-    function  initializeConnection(connect_callback/*(connection)*/) {
-	    // displays your config in the terminal
-    	console.log(database);
-    	console.log('Connecting to mysql');
-    	console.log(' host='  +  database.server);
-    	console.log(' database='  +  database.database);
-    	console.log(' user='  +  database.user);
-    	console.log(' options='  +  database.options);
-    	console.log('');
-    	console.log("Initialising module connection");
+```js
+// Function call for database connection
+function  initializeConnection(connect_callback/*(connection)*/) {
+	// displays your config in the terminal
+	console.log(database);
+	console.log('Connecting to mysql');
+	console.log(' host='  +  database.server);
+	console.log(' database='  +  database.database);
+	console.log(' user='  +  database.user);
+	console.log(' options='  +  database.options);
+	console.log('');
+	console.log("Initialising module connection");
 
-		// creating connection
-    	var connection =  mysql.createConnection({
-    		user: database.user,
-    		password: database.password,
-    		host: database.server,
-    		database: config.database.database,
-    		port: database.port,
-    		options: database.options
-    	});
-    	connection.connect();
-    	connect_callback(connection);
-    }
+	// creating connection
+	var connection =  mysql.createConnection({
+		user: database.user,
+		password: database.password,
+		host: database.server,
+		database: config.database.database,
+		port: database.port,
+		options: database.options
+	});
+	connection.connect();
+	connect_callback(connection);
+}
+```
 
 Now let's call this db-connection to the `server.js` file that we created.
 
 Add this block of code to the `server.js` file.
 
-    // server.js
-    var connection =  require('./src/config/db-mysql')
+```js
+// server.js
+var connection =  require('./src/config/db-mysql')
+```
 
 This will initialize mysql driver to the variable `connection`. Then we will call the `init` function inside the `connection` we just created.
 
-     connection.init((conn) => {
-    	 //we will place our `server.listen` here
-    	 server.listen('8081', function () {
-    	 console.log('Listening to post 8081')
-    	 })
-     })
+```js
+ connection.init((conn) => {
+	 //we will place our `server.listen` here
+	 server.listen('8081', function () {
+	 console.log('Listening to post 8081')
+	 })
+ })
+```
 
 Now try running **nodemon** on your terminal and Voila! You successfully created your connection!
 
@@ -181,91 +197,99 @@ On your root project folder, create a folder named `user` and inside it create a
 
 First we will create a GET_all_user function that have a request, res, and a callback function.
 
-    // GET_all_user.js
-    exports.GET_all_user  =  function(req, res, _dbConnection){
-	    //initialize database connection
-		dbConnection = _dbConnection;
-		
-		//initialize response
-		var resp;
-		
-		//Call getAllUser fn
-		getAllUser(function(err, allUser){
-			//check the server
-			if (err){
-			let err = {}
-			err.status  =  '500'
-			err.message  =  'Internal Server Error'
-			res.send(err)
-			}
-			
-			//check if there's fetched data
-			if (allUser.length  !==  0) {
-			resp = {status: "200", allUser: allUser};
-			} else {
-			resp = {status: "204", message: "No Data Available!"};
-			}
-			
-			//send response
-			res.send(resp);
-		});
-    }
+```
+// GET_all_user.js
+exports.GET_all_user  =  function(req, res, _dbConnection){
+	//initialize database connection
+	dbConnection = _dbConnection;
+
+	//initialize response
+	var resp;
+
+	//Call getAllUser fn
+	getAllUser(function(err, allUser){
+		//check the server
+		if (err){
+		let err = {}
+		err.status  =  '500'
+		err.message  =  'Internal Server Error'
+		res.send(err)
+		}
+
+		//check if there's fetched data
+		if (allUser.length  !==  0) {
+		resp = {status: "200", allUser: allUser};
+		} else {
+		resp = {status: "204", message: "No Data Available!"};
+		}
+
+		//send response
+		res.send(resp);
+	});
+}
+```
 
 Of course we will need a function that will fetch data on the database . Add this code:
 
-    /getAllUser fn
-    //-------------
-    function  getAllUser(callback) {
-    
-	    // this sql command calls all the USER in the table user_tbl where the user_isdel
-	    // field is equal (=) to 0
-	    var sql =  'SELECT * FROM user_tbl WHERE user_isdel = 0';
-	    
-	    //executing sql
-	    dbConnection.query(sql, function(err, recordset){
-	    
-		    //check error on fetching
-		    if (err) {
-			    console.log(err);
-			    callback(err, null);
-		    }
-		    
-		    //initialize user list array
-		    var allUserList = [];
-		    
-		    //loop for each record in user table
-		    for (var index in recordset){
-			    //save each record in object
-			    var allUser = {
-			    user_id: recordset[index].user_id,
-			    user_fname: recordset[index].user_fname,
-			    user_lname: recordset[index].user_fname,
-			    };
-			    
-			    //push record in allUserList array
-			    allUserList.push(allUser);
-		    }
-		    
-		    //returns User list
-		    callback(null, allUserList);
-	    });
-    }
-    //------------
+```js
+/getAllUser fn
+//-------------
+function  getAllUser(callback) {
+
+	// this sql command calls all the USER in the table user_tbl where the user_isdel
+	// field is equal (=) to 0
+	var sql =  'SELECT * FROM user_tbl WHERE user_isdel = 0';
+
+	//executing sql
+	dbConnection.query(sql, function(err, recordset){
+
+		//check error on fetching
+		if (err) {
+			console.log(err);
+			callback(err, null);
+		}
+
+		//initialize user list array
+		var allUserList = [];
+
+		//loop for each record in user table
+		for (var index in recordset){
+			//save each record in object
+			var allUser = {
+			user_id: recordset[index].user_id,
+			user_fname: recordset[index].user_fname,
+			user_lname: recordset[index].user_fname,
+			};
+
+			//push record in allUserList array
+			allUserList.push(allUser);
+		}
+
+		//returns User list
+		callback(null, allUserList);
+	});
+}
+//------------
+```
 
 Second, we will create a file that will be initialize in our main JS file, this will be calling `GET_all_user.js`  and our other request that will be discuss in our next module.
 
 Inside the `user` folder, create a file named `api.js`.
 
-    // api.js
-    var GET_all_user =  require('./GET_all_user')
+```js
+// api.js
+var GET_all_user =  require('./GET_all_user')
+```
 
 This will call the `GET_all_user` file and save it to the variable with the same name, of course you can change if you wish.
 
 Then, we will create a export function named `init` that passes server and the database.
 
-    module.exports.init = function init (server, dbConnection){
-    
-    }
+```js
+module.exports.init = function init (server, dbConnection){
+
+}
+```
 
 Inside that function, you define routing using methods of the Express `server` object that correspond to HTTP methods; for example, `server.get()` to handle GET requests that we do in the Hello World in the beggining.
 
@@ -281,24 +305,26 @@ Finally, we will call the `api.js` file in the `server.js` to run our Get reques
 
 On your `server.js`, we want to load the module that we create. Add this code inside the `connection.init` function.
 
-    //this will call loadModules passing server, connection, and a callback
-    loadModules(server, conn, function (err, resp) {
-    	if (resp.status  ===  'success') {
-    	console.log('---Main Modules Activated----')
-    	}
-    })
+```js
+//this will call loadModules passing server, connection, and a callback
+loadModules(server, conn, function (err, resp) {
+	if (resp.status  ===  'success') {
+	console.log('---Main Modules Activated----')
+	}
+})
 
 This is the `loadModule` function
 
-    // function for loading modules
-    function  loadModules (server, dbConnection, callback) {
-    	var modules =  require('./user/api')
-    	
-    	//this will run the init function in the user/api.js
-    	modules.init(server, dbConnection)
-    	
-    	callback(null, { status: 'success' })
-    }
+// function for loading modules
+function  loadModules (server, dbConnection, callback) {
+	var modules =  require('./user/api')
+
+	//this will run the init function in the user/api.js
+	modules.init(server, dbConnection)
+
+	callback(null, { status: 'success' })
+}
+```
 
 Now you can run the application using `nodemon`.
 
@@ -317,89 +343,95 @@ First, create a file named `GET_user.js` of course.
 
 This will be the code block for the `GET_user.js`.
 
-    exports.GET_user  =  function(req, res, _dbConnection){
-    //initialize database connection
-    dbConnection = _dbConnection;
-    
-    //initialize response
-    var resp;
-    
-    //fetch userId in parameter this will fetch an userId parameter in the url
-    var params = {
-	    userId: req.params.userId
-    };
-    
-    //Call get user fn
-    getUser(params, function(err, user){
-	    //if the callback returns an err, the server will display error
-	    if (err){
-		    let err = {}
-		    err.status  =  '500'
-		    err.message  =  'Internal Server Error'
-		    res.send(err)
-	    }
-    
-	    //check if there's fetched data
-	    if (user !==  null){
-	    resp = {status: "200", user: user};
-	    } else {
-	    //else if empty
-	    resp = {status: "204", message: "No Data Available!"};
-	    }
-    
-	    //send response
-	    res.send(resp);
-	    });
-    };
-    
-    //getUser fn
-    //-------------
-    function  getUser(params, callback) {
-	    //declare userId
-	    var userId =  params.userId;
-	    
-	    //sql command
-	    //this will search for the user with the id that we pass
-	    var sql =  'SELECT * FROM user_tbl WHERE user_isdel = 0 AND user_id = '  + userId;
-	    
-	    //executing sql
-	    dbConnection.query(sql, function(err, recordset){
-		    //check error on fetching
-		    if (err) {
-			    console.log('error: getUser Error : '  + err);
-			    callback(err, null);
-		    }
-		    
-		    //initalize userResponse
-		    var userRes =  null;
-		    
-		    //check if there's record
-		    if (recordset.length  !==  0){
-			    //this will save the first recordset to the userRes object
-			    userRes = {
-				    user_id: recordset[0].user_id,
-				    user_fname: recordset[0].user_fname,
-				    user_lname: recordset[0].user_lname,
-				    user_isdel: recordset[0].user_isdel
-			    };
-		    }
-		    
-		    //return userRes object
-		    callback(null,userRes);
-	    });
-    
-    }
+```js
+exports.GET_user  =  function(req, res, _dbConnection){
+//initialize database connection
+dbConnection = _dbConnection;
+
+//initialize response
+var resp;
+
+//fetch userId in parameter this will fetch an userId parameter in the url
+var params = {
+	userId: req.params.userId
+};
+
+//Call get user fn
+getUser(params, function(err, user){
+	//if the callback returns an err, the server will display error
+	if (err){
+		let err = {}
+		err.status  =  '500'
+		err.message  =  'Internal Server Error'
+		res.send(err)
+	}
+
+	//check if there's fetched data
+	if (user !==  null){
+	resp = {status: "200", user: user};
+	} else {
+	//else if empty
+	resp = {status: "204", message: "No Data Available!"};
+	}
+
+	//send response
+	res.send(resp);
+	});
+};
+
+//getUser fn
+//-------------
+function  getUser(params, callback) {
+	//declare userId
+	var userId =  params.userId;
+
+	//sql command
+	//this will search for the user with the id that we pass
+	var sql =  'SELECT * FROM user_tbl WHERE user_isdel = 0 AND user_id = '  + userId;
+
+	//executing sql
+	dbConnection.query(sql, function(err, recordset){
+		//check error on fetching
+		if (err) {
+			console.log('error: getUser Error : '  + err);
+			callback(err, null);
+		}
+
+		//initalize userResponse
+		var userRes =  null;
+
+		//check if there's record
+		if (recordset.length  !==  0){
+			//this will save the first recordset to the userRes object
+			userRes = {
+				user_id: recordset[0].user_id,
+				user_fname: recordset[0].user_fname,
+				user_lname: recordset[0].user_lname,
+				user_isdel: recordset[0].user_isdel
+			};
+		}
+
+		//return userRes object
+		callback(null,userRes);
+	});
+
+}
+```
 
 Second, we will add the `GET_user.js` in our `api.js`.
 
-    var GET_user =  require('./GET_user')
-    
+```js
+var GET_user =  require('./GET_user')
+```
+
 And inside the `init` function, add this block of codes there:
 
-    server.get('/api/user/:userId', function (req, res) {
-       	GET_user.GET_user(req, res, dbConnection)
-       	console.log('info: done with GET_user.GET_user')
-    })
+```js
+server.get('/api/user/:userId', function (req, res) {
+	GET_user.GET_user(req, res, dbConnection)
+	console.log('info: done with GET_user.GET_user')
+})
+```
 	
 Now you can go to your Postman and enter [`http://localhost:8081/api/user/1`](http://localhost:8081/api/user/2)
 
@@ -413,166 +445,182 @@ Now, we will create a user using a post request, we will install a library calle
 
 First, create a file in the user table named `POST_user.js`.  To import async, type:
 
-    // POST_user.js
-    const async =  require('async')
+```js
+// POST_user.js
+const async =  require('async')
+```
 
 Second, we will create a POST_user function that will get a req, res and  database connection
 
-    exports.POST_user = function(req, res, _dbConnection){
-    
-    }
+```js
+exports.POST_user = function(req, res, _dbConnection){
+
+}
+```
 
 We also want to create a function that will get data from the request body,  save it in the database.
 
-	/putUser fn
-    //--------------
-    function  putUser(dbConnection, body, callback) {
-	    //we will save the user_fname and user_lname that in the request body
-    	let sqlData = [body.user_fname, body.user_lname];
-		
-    	let sqlQuery =  'INSERT INTO user_tbl (user_fname, user_lname, user_isdel) '  +
-    	'VALUES (?, ?, 0)';
-    
-    	dbConnection.query(sqlQuery, sqlData, function(err, result) {
-    	if (err) {
-    	console.log('error', TAG +  'putUser Err : '  + err)
-    	callback(err, null);
-    	} else {
-    	callback(null, result);
-    	}
-    	});
-    }
-    //--------------
+```js
+/putUser fn
+//--------------
+function  putUser(dbConnection, body, callback) {
+	//we will save the user_fname and user_lname that in the request body
+	let sqlData = [body.user_fname, body.user_lname];
+
+	let sqlQuery =  'INSERT INTO user_tbl (user_fname, user_lname, user_isdel) '  +
+	'VALUES (?, ?, 0)';
+
+	dbConnection.query(sqlQuery, sqlData, function(err, result) {
+	if (err) {
+	console.log('error', TAG +  'putUser Err : '  + err)
+	callback(err, null);
+	} else {
+	callback(null, result);
+	}
+	});
+}
+//--------------
+```
 
 Note: You might need to read about [prepared statements](https://github.com/sidorares/node-mysql2#using-prepared-statements) use in this module.
 
 We also want to validate if the body is empty.
 
-    //validateCredential fn
-    //--------------
-    function  validateCredential(body, callback){
-    	if (body.user_fname  ==  ''  ||  body.user_fname  ==  null) {
-    		result =  'User First Name is empty';
-    		callback(null, result)
-    	} else  if (body.user_lname  ==  ''  ||  body.user_lname  ==  null) {
-    		result =  'User Last Name is empty';
-    		callback(null, result)
-    	}else{
-    		callback()
-    	}
-    }
-    //--------------
+```js
+//validateCredential fn
+//--------------
+function  validateCredential(body, callback){
+	if (body.user_fname  ==  ''  ||  body.user_fname  ==  null) {
+		result =  'User First Name is empty';
+		callback(null, result)
+	} else  if (body.user_lname  ==  ''  ||  body.user_lname  ==  null) {
+		result =  'User Last Name is empty';
+		callback(null, result)
+	}else{
+		callback()
+	}
+}
+//--------------
+```
 
 Now we will create a function that will call `validateCredential` and `putUser` function and place it inside the `async.waterfall([firstFn, secondFn], mainCallbackFn)`.
 
-    //insertUser fn
-    //--------------
-    function  insertUser(req, res, _dbConnection, callback) {
-	    //initialize database connection
-	    var dbConnection = _dbConnection;
-	    
-	    //initialize response
-	    var resp;
-	    
-	    //if any of the functions pass an error to the callback
-	    //the next function is not executed and the main callback is 
-	    //immediately called with the error
-	    async.waterfall([
-		    function (callback) {
-			    validateCredential(req.body, function(err, result){
-				    //check if the validateCredentials return a callback(err, null)
-				    if (err) {
-					    callback(err, null);
-				    } else {
-					    //check if the validateCredentials return a callback(null, result)
-					    if (result) {
-						    let err = {
-							    status: '204',
-							    message: result
-						    };
-						    callback(err, null);
-					    } else {
-						    callback();
-					    }
-				    }    
-			    });
-		    },
-		    function (callback) {
-			    putUser(dbConnection, req.body, function(err, result){
-				    if (err) {
-					    callback(err, null);
-				    } else {
-					    callback(null, result.insertId);
-				    }
-			    });
-		    }
-	    ],
-	    //main callback function
-	    function (err, userId) {
-		    if (err) {
-			    callback(err, null)
-		    } else {
-			    resp = {status: "200", userId: userId};
-			    callback(null, resp);
-		    }
-	    })
-    }
-    //--------------
+```js
+//insertUser fn
+//--------------
+function  insertUser(req, res, _dbConnection, callback) {
+	//initialize database connection
+	var dbConnection = _dbConnection;
+
+	//initialize response
+	var resp;
+
+	//if any of the functions pass an error to the callback
+	//the next function is not executed and the main callback is 
+	//immediately called with the error
+	async.waterfall([
+		function (callback) {
+			validateCredential(req.body, function(err, result){
+				//check if the validateCredentials return a callback(err, null)
+				if (err) {
+					callback(err, null);
+				} else {
+					//check if the validateCredentials return a callback(null, result)
+					if (result) {
+						let err = {
+							status: '204',
+							message: result
+						};
+						callback(err, null);
+					} else {
+						callback();
+					}
+				}    
+			});
+		},
+		function (callback) {
+			putUser(dbConnection, req.body, function(err, result){
+				if (err) {
+					callback(err, null);
+				} else {
+					callback(null, result.insertId);
+				}
+			});
+		}
+	],
+	//main callback function
+	function (err, userId) {
+		if (err) {
+			callback(err, null)
+		} else {
+			resp = {status: "200", userId: userId};
+			callback(null, resp);
+		}
+	})
+}
+//--------------
+```
 
 Lastly,  we will call the `insertUser`  function inside our `POST_user` . We will also put a callback checking if the callback results to an error.
 
-    insertUser(req, res, _dbConnection, function (err, result){
-	    if (err) {
-		    //check if its a error
-		    if(err.status  !=  '204'){
-			    let err = {}
-			    err.status  =  '500'
-			    err.message  =  'Internal Server Error'
-		    }
-		    res.send(err);
-	    } else {
-		    res.send(result);
-	    }
-    });
+```js
+insertUser(req, res, _dbConnection, function (err, result){
+	if (err) {
+		//check if its a error
+		if(err.status  !=  '204'){
+			let err = {}
+			err.status  =  '500'
+			err.message  =  'Internal Server Error'
+		}
+		res.send(err);
+	} else {
+		res.send(result);
+	}
+});
+```
 
 Alright, the POST_user is ready! We need to include `POST_user.js` in `api.js` with the request `post` and the path `/api/user`.
 
-    //Create user
-    //----------------
-    server.post('/api/user', function (req, res) {
-    	POST_user.POST_user(req, res, dbConnection)
-    	console.log('info', 'done with POST_user.POST_user')
-    })
-    //---------------
+```js
+//Create user
+//----------------
+server.post('/api/user', function (req, res) {
+	POST_user.POST_user(req, res, dbConnection)
+	console.log('info', 'done with POST_user.POST_user')
+})
+//---------------
+```
 
 Before testing, we need to install `body-parser`, it parse incoming request bodies in a middleware before your handlers, available under the `req.body` property.
 
 Place this code above our `server.js` file:
 
-	//server.js
-    const bodyParser =  require('body-parser');  
-    
-    //this will use as a middleware of our application to fetch json object to our body request
-    server.use(bodyParser.json());
-    server.use(bodyParser.urlencoded({extended: true}));
+```js
+//server.js
+const bodyParser =  require('body-parser');  
 
-	server.use(function (req, res, next) {
-		// Website you wish to allow to connect when we make our Vue.js UI
-		res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8081');
+//this will use as a middleware of our application to fetch json object to our body request
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({extended: true}));
 
-		// Request methods you wish to allow
-		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+server.use(function (req, res, next) {
+	// Website you wish to allow to connect when we make our Vue.js UI
+	res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8081');
 
-		// Request headers you wish to allow
-		res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+	// Request methods you wish to allow
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
-		// Set to true if you need the website to include cookies in the requests sent
-		// to the API (e.g. in case you use sessions)
-		res.setHeader('Access-Control-Allow-Credentials', true);
+	// Request headers you wish to allow
+	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 
-		// Pass to next layer of middleware
-		next();
-	});
+	// Set to true if you need the website to include cookies in the requests sent
+	// to the API (e.g. in case you use sessions)
+	res.setHeader('Access-Control-Allow-Credentials', true);
+
+	// Pass to next layer of middleware
+	next();
+});
+```
 
 Open your Postman, switch to POST and enter [`localhost:8081/api/user`](localhost:8081/api/user).
 
@@ -604,116 +652,132 @@ First, create a file named `PUT_user.js`.
 
 We need to create a function here that will be exported.
 
-    // PUT_user.js
-    exports.PUT_user  =  function (req, res, _dbConnection, next) {
-	    //call update user
-	    updateUser(req, res, _dbConnection, next)
-    }
+```js
+// PUT_user.js
+exports.PUT_user  =  function (req, res, _dbConnection, next) {
+	//call update user
+	updateUser(req, res, _dbConnection, next)
+}
+```
 
 In the updateUser function, we will check if the request body object has a next input to be expected
 
-    function  updateUser (req, res, _dbConnection, next) {
-	    //passes req.body so we can only type body in the future
-		let body =  req.body
+```js
+function  updateUser (req, res, _dbConnection, next) {
+	//passes req.body so we can only type body in the future
+	let body =  req.body
 
-		//initialize sqlData array
-		let sqlData = []
+	//initialize sqlData array
+	let sqlData = []
 
-		//count request body
-		//we need to count the body so we will know if there will be a next field to be added in the query.
-		let count=0;
-		for(let prop in body) {
-			if (body.hasOwnProperty(prop)) {
-				count++;
-			}
+	//count request body
+	//we need to count the body so we will know if there will be a next field to be added in the query.
+	let count=0;
+	for(let prop in body) {
+		if (body.hasOwnProperty(prop)) {
+			count++;
 		}
-    }
+	}
+}
+```
 
 Next we will create a sql command.
 
-	//inside the updateUser function
-    //make update sql query
-    let sqlQuery =  ` UPDATE user_tbl
-    SET `
+```js
+//inside the updateUser function
+//make update sql query
+let sqlQuery =  ` UPDATE user_tbl
+SET `
+```
 
 Then we will add the values to be UPDATED to the sqlQuery if the values are not empty.
 
-    //concat user_fname if not empty to the sql query
-    if (body.user_fname) {
-	    sqlQuery +=  ` user_fname = ?`
-	    sqlData.push(body.user_fname)
-	    
-	    //check if the body object we count is above 1 then we will add a comma
-	    if(count >  1){
-		    sqlQuery +=  `,`
-		    count--;
-	    }
-    }
-    //concat user_lname if not empty to the sql query
-    if (body.user_lname) {
-	    sqlQuery +=  ` user_lname = ? `
-	    sqlData.push(body.user_lname)
-	    
-	    //check if the body object we count is above 1 then we will add a comma
-	    if(count >  1){
-		    sqlQuery +=  `,`
-		    count--;
-	    }
-    }
-    
-    //concat user_isdel if not empty to the sql query
-    //is user_isdel is one, delete.
-    if (body.user_isdel) {
-	    sqlQuery +=  ` user_isdel = ? `
-	    sqlData.push(body.user_isdel)
-	    
-	    //check if the body object we count is above 1 then we will add a comma
-	    if(count >  1){
-		    sqlQuery +=  `,`
-		    count--;
-	    }
-    }
+```js
+//concat user_fname if not empty to the sql query
+if (body.user_fname) {
+	sqlQuery +=  ` user_fname = ?`
+	sqlData.push(body.user_fname)
+
+	//check if the body object we count is above 1 then we will add a comma
+	if(count >  1){
+		sqlQuery +=  `,`
+		count--;
+	}
+}
+//concat user_lname if not empty to the sql query
+if (body.user_lname) {
+	sqlQuery +=  ` user_lname = ? `
+	sqlData.push(body.user_lname)
+
+	//check if the body object we count is above 1 then we will add a comma
+	if(count >  1){
+		sqlQuery +=  `,`
+		count--;
+	}
+}
+
+//concat user_isdel if not empty to the sql query
+//is user_isdel is one, delete.
+if (body.user_isdel) {
+	sqlQuery +=  ` user_isdel = ? `
+	sqlData.push(body.user_isdel)
+
+	//check if the body object we count is above 1 then we will add a comma
+	if(count >  1){
+		sqlQuery +=  `,`
+		count--;
+	}
+}
+```
 
 After that we will add the WHERE command in the sqlQuery so the query will know which user_id will be updated.
 
-    //add WHERE query in which id we will be updating
-    //req.params.userId will be fetching the userId
-    sqlData.push(req.params.userId)
-    sqlQuery +=  ` WHERE user_id = ? `
+```js
+//add WHERE query in which id we will be updating
+//req.params.userId will be fetching the userId
+sqlData.push(req.params.userId)
+sqlQuery +=  ` WHERE user_id = ? `
+```
 
 Then we will run the command that have a callback checking it there is an error occur while executing the command.
 
-    _dbConnection.query(sqlQuery, sqlData, function (err, result) {
-        if (err) {
-            let err = {}
-            console.log('error: updateUser Err : '  + err)
-            err.status  =  '500'
-            err.message  =  'Internal Server Error'
-            res.send(err)
-        } else {
-            sqlQuery = 'SELECT * FROM user_tbl WHERE user_id = ' + id
-            _dbConnection.query(sqlQuery, function(err, result){
-                let resp = {status: '200', user: result}
-                res.send(resp)  
-            })
-        }
-    })
+```js
+_dbConnection.query(sqlQuery, sqlData, function (err, result) {
+	if (err) {
+		let err = {}
+		console.log('error: updateUser Err : '  + err)
+		err.status  =  '500'
+		err.message  =  'Internal Server Error'
+		res.send(err)
+	} else {
+		sqlQuery = 'SELECT * FROM user_tbl WHERE user_id = ' + id
+		_dbConnection.query(sqlQuery, function(err, result){
+			let resp = {status: '200', user: result}
+			res.send(resp)  
+		})
+	}
+})
+```
 
 Note: We used the prepared statement [prepared statements](https://github.com/sidorares/node-mysql2#using-prepared-statements) again.
 
 Next we will add the `PUT_user.js` in the  `api.js`
 
-	var PUT_user =  require('./PUT_user')
-	
+```js
+var PUT_user =  require('./PUT_user')
+```
+
 Inside the init function.
 
-    //Update user
-    //---------------
-    server.put('/api/user/:userId', function (req, res, next) {
-    	PUT_user.PUT_user(req, res, dbConnection, next)
-    	console.log('info', 'done with PUT_user.PUT_user')
-    })
-    //---------------
+```js
+//Update user
+//---------------
+server.put('/api/user/:userId', function (req, res, next) {
+	PUT_user.PUT_user(req, res, dbConnection, next)
+	console.log('info', 'done with PUT_user.PUT_user')
+})
+//---------------
+```
 
 Okay! Now we will be testing it using Postman.
 
@@ -751,23 +815,29 @@ First we will install `swagger-ui-express` that will display our API in swagger-
 
 Once installed, we can now call our `swagger-ui-express` module in the `server.js`.
 
-	//server.js
-    const swaggerUi = require('swagger-ui-express')
+```js
+//server.js
+const swaggerUi = require('swagger-ui-express')
+```
 
 Then, we will use `swaggerUi`  as a middleware with the path `/api-docs`, call swaggerUi.serve and swaggerUi.setup.
 
-	const swagger =  require('./swagger')
-    server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagger));
+```js
+const swagger =  require('./swagger')
+server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagger));
+```
 
 The `swagger` in the `swaggerUi.setup` parameter is a JSON file that we will creating.
 
-    "swagger":"2.0",
-    
-    "info":{
-	    "title":"Sample Swagger",
-	    "description":"Documentation and testing of your APIs",
-	    "version":"1.0"	
-	}
+```json
+"swagger":"2.0",
+
+"info":{
+	"title":"Sample Swagger",
+	"description":"Documentation and testing of your APIs",
+	"version":"1.0"	
+}
+```
 	
 `"swagger"` **Required.** Provides metadata about the API. The metadata can be used by the clients if needed.
 
@@ -777,43 +847,51 @@ The `swagger` in the `swaggerUi.setup` parameter is a JSON file that we will cre
 
 Note: [JSON objects](https://www.w3schools.com/js/js_json_objects.asp) are surrounded by curly braces {}. Every key/value pair is separated by comma.
 
-    "produces":[
-    	"application/json"
-    ]
+```json
+"produces":[
+	"application/json"
+]
+```
 
 `"produces"` A list of MIME types the APIs can produce. This is global to all APIs but can be overridden on specific API calls. Value MUST be as described under Mime Types.
 
-    "paths":{
-	    //.. path here
-    }
+```json
+"paths":{
+	//.. path here
+}
+```
 
 `"path"` **Required.** The available paths and operations for the API.
 
-    "definitions": {
-	    //.. model here
-    }
+```json
+"definitions": {
+	//.. model here
+}
+```
 
 `"definition"` An object to hold data types produced and consumed by operations.
 
 Now, under the inside the `definition` key. We will create a schema for `User` with the type of `object` and `properties` of our schema in the database.
 
-    "User": {
-	    "type": "object",
-	    "properties": {
-		    "user_id": {
-			    "type": "integer"
-		    },
-		    "user_fname": {
-			    "type": "string"
-		    },
-		    "user_lname": {
-			    "type": "string"
-		    },
-		    "user_isdel": {
-			    "type": "integer"
-		    }
-	    }
-    }
+```json
+"User": {
+	"type": "object",
+	"properties": {
+		"user_id": {
+			"type": "integer"
+		},
+		"user_fname": {
+			"type": "string"
+		},
+		"user_lname": {
+			"type": "string"
+		},
+		"user_isdel": {
+			"type": "integer"
+		}
+	}
+}
+```
 
 Save it and go to your browser to see the User schema.
 
@@ -821,93 +899,95 @@ Save it and go to your browser to see the User schema.
 
 After that, inside the `path` key. We will key/value pair with an object as a value of our user endpoint in the `api.js`.
 
-    "/api/user/{userId}":{
-	    "get":{
-		    "summary":"generate a single user",
-			"operationId":"generate a single user",
-			"tags":[
-				"User"
-			],
-			"description":"This will generate a single user.",
-			"parameters":[
-				{
-					"in":"path",
-					"name":"userId",
-					"type":"integer",
-					"required":true,
-					"description":"We need to input user id"
-				}
-			],
-			"responses":{
-
-			}
-	    },
-	    "put":{
-			"summary":"update and delete user",
-			"operationId":"update and delete a user",
-			"tags":[
+```json
+"/api/user/{userId}":{
+	"get":{
+		"summary":"generate a single user",
+		"operationId":"generate a single user",
+		"tags":[
 			"User"
-			],
-			"description":"This will update a user in the system. If the user_isdel is 1, the user with that id will be deleted.",
-			"parameters":[
-				{
-					"in":"path",
-					"name":"userId",
-					"type":"integer",
-					"required":true,
-					"description":"We need to input user id"
-				},
-				{
-				"in":"body",
-				"name":"body",
+		],
+		"description":"This will generate a single user.",
+		"parameters":[
+			{
+				"in":"path",
+				"name":"userId",
+				"type":"integer",
 				"required":true,
-				"description":"Body",
-				"schema": {
-					"$ref": "#/definitions/User"
-					}
-				}
-			],
-			"responses":{
-
+				"description":"We need to input user id"
 			}
+		],
+		"responses":{
+
 		}
 	},
-
-	"/api/user":{
-		"get":{
-			"summary":"generate all users",
-			"operationId":"generate all users",
-			"tags":[
-				"User"
-			],
-			"description":"This will all the users in the system.",
-			"responses":{
-
-			}
-		},
-		"post":{
-			"summary":"create a user",
-			"operationId":"create a user",
-			"tags":[
-			"User"
-			],
-			"description":"This will create a new user in the system. Only the user_fname and user_lname is required in the field.",
-			"parameters":[
-				{
-				"in":"body",
-				"name":"body",
+	"put":{
+		"summary":"update and delete user",
+		"operationId":"update and delete a user",
+		"tags":[
+		"User"
+		],
+		"description":"This will update a user in the system. If the user_isdel is 1, the user with that id will be deleted.",
+		"parameters":[
+			{
+				"in":"path",
+				"name":"userId",
+				"type":"integer",
 				"required":true,
-				"description":"Body",
-				"schema": {
-					"$ref": "#/definitions/User"
-					}
+				"description":"We need to input user id"
+			},
+			{
+			"in":"body",
+			"name":"body",
+			"required":true,
+			"description":"Body",
+			"schema": {
+				"$ref": "#/definitions/User"
 				}
-			],
-			"responses":{
-
 			}
+		],
+		"responses":{
+
 		}
 	}
+},
+
+"/api/user":{
+	"get":{
+		"summary":"generate all users",
+		"operationId":"generate all users",
+		"tags":[
+			"User"
+		],
+		"description":"This will all the users in the system.",
+		"responses":{
+
+		}
+	},
+	"post":{
+		"summary":"create a user",
+		"operationId":"create a user",
+		"tags":[
+		"User"
+		],
+		"description":"This will create a new user in the system. Only the user_fname and user_lname is required in the field.",
+		"parameters":[
+			{
+			"in":"body",
+			"name":"body",
+			"required":true,
+			"description":"Body",
+			"schema": {
+				"$ref": "#/definitions/User"
+				}
+			}
+		],
+		"responses":{
+
+		}
+	}
+}
+```
 
 Note: As a reference read the [Swagger Path Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#pathsObject)
 
