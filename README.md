@@ -139,32 +139,6 @@ exports.init  =  function (connect_callback) {
 
 This is the `initializeConnection` function.
 
-<<<<<<< HEAD
-    // Function call for database connection
-    function  initializeConnection(connect_callback/*(connection)*/) {
-	    // displays your config in the terminal
-    	console.log(database);
-    	console.log('Connecting to mysql');
-    	console.log(' host='  +  database.server);
-    	console.log(' database='  +  database.database);
-    	console.log(' user='  +  database.user);
-    	console.log(' options='  +  database.options);
-    	console.log('');
-    	console.log("Initialising module connection");
-
-		// creating connection
-    	var connection =  mysql.createConnection({
-    		user: database.user,
-    		password: database.password,
-    		host: database.server,
-    		database: database.database,
-    		port: database.port,
-    		options: database.options
-    	});
-    	connection.connect();
-    	connect_callback(connection);
-    }
-=======
 ```js
 // Function call for database connection
 function  initializeConnection(connect_callback/*(connection)*/) {
@@ -191,7 +165,6 @@ function  initializeConnection(connect_callback/*(connection)*/) {
 	connect_callback(connection);
 }
 ```
->>>>>>> 79e57d50afffe0d11dc4844f733d03ab405b603a
 
 Now let's call this db-connection to the `server.js` file that we created.
 
@@ -224,7 +197,7 @@ On your root project folder, create a folder named `user` and inside it create a
 
 First we will create a GET_all_user function that have a request, res, and a callback function.
 
-```
+```js
 // GET_all_user.js
 exports.GET_all_user  =  function(req, res, _dbConnection){
 	//initialize database connection
@@ -258,46 +231,6 @@ exports.GET_all_user  =  function(req, res, _dbConnection){
 
 Of course we will need a function that will fetch data on the database . Add this code:
 
-<<<<<<< HEAD
-    /getAllUser fn
-    //-------------
-    function  getAllUser(callback) {
-    
-	    // this sql command calls all the USER in the table user_tbl where the user_isdel
-	    // field is equal (=) to 0
-	    var sql =  'SELECT * FROM user_tbl WHERE user_isdel = 0';
-	    
-	    //executing sql
-	    dbConnection.query(sql, function(err, recordset){
-	    
-		    //check error on fetching
-		    if (err) {
-			    console.log(err);
-			    callback(err, null);
-		    }
-		    
-		    //initialize user list array
-		    var allUserList = [];
-		    
-		    //loop for each record in user table
-		    for (var index in recordset){
-			    //save each record in object
-			    var allUser = {
-			    user_id: recordset[index].user_id,
-			    user_fname: recordset[index].user_fname,
-			    user_lname: recordset[index].user_lname,
-			    };
-			    
-			    //push record in allUserList array
-			    allUserList.push(allUser);
-		    }
-		    
-		    //returns User list
-		    callback(null, allUserList);
-	    });
-    }
-    //------------
-=======
 ```js
 /getAllUser fn
 //-------------
@@ -338,7 +271,6 @@ function  getAllUser(callback) {
 }
 //------------
 ```
->>>>>>> 79e57d50afffe0d11dc4844f733d03ab405b603a
 
 Second, we will create a file that will be initialize in our main JS file, this will be calling `GET_all_user.js`  and our other request that will be discuss in our next module.
 
@@ -380,20 +312,11 @@ loadModules(server, conn, function (err, resp) {
 	console.log('---Main Modules Activated----')
 	}
 })
+```
 
-<<<<<<< HEAD
-    // function for loading modules
-    function  loadModules (server, dbConnection, callback) {
-    	var modules =  require('./user/api')
-    	
-    	//this will run the init function in the user/api.js
-    	modules.init(server, dbConnection)
-    	
-    	callback(null, { status: 'success' })
-    }
-=======
 This is the `loadModule` function
 
+```js
 // function for loading modules
 function  loadModules (server, dbConnection, callback) {
 	var modules =  require('./user/api')
@@ -404,7 +327,6 @@ function  loadModules (server, dbConnection, callback) {
 	callback(null, { status: 'success' })
 }
 ```
->>>>>>> 79e57d50afffe0d11dc4844f733d03ab405b603a
 
 Now you can run the application using `nodemon`.
 
@@ -909,17 +831,8 @@ server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagger));
 
 The `swagger` in the `swaggerUi.setup` parameter is a JSON file that we will creating.
 
-<<<<<<< HEAD
-Note: The code Iinside the `swagger.json` file is enclose with curly braces {}.
+Note: Create a swagger.json file in the root folder and enclose the content in curly braces {}.
 
-    "swagger":"2.0",
-    
-    "info":{
-	    "title":"Sample Swagger",
-	    "description":"Documentation and testing of your APIs",
-	    "version":"1.0"	
-	}
-=======
 ```json
 "swagger":"2.0",
 
@@ -929,7 +842,6 @@ Note: The code Iinside the `swagger.json` file is enclose with curly braces {}.
 	"version":"1.0"	
 }
 ```
->>>>>>> 79e57d50afffe0d11dc4844f733d03ab405b603a
 	
 `"swagger"` **Required.** Provides metadata about the API. The metadata can be used by the clients if needed.
 
@@ -949,7 +861,7 @@ Note: [JSON objects](https://www.w3schools.com/js/js_json_objects.asp) are surro
 
 ```json
 "paths":{
-	//.. path here
+	
 }
 ```
 
@@ -957,7 +869,7 @@ Note: [JSON objects](https://www.w3schools.com/js/js_json_objects.asp) are surro
 
 ```json
 "definitions": {
-	//.. model here
+	
 }
 ```
 
