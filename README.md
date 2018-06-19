@@ -157,7 +157,7 @@ function  initializeConnection(connect_callback/*(connection)*/) {
 		user: database.user,
 		password: database.password,
 		host: database.server,
-		database: config.database.database,
+		database: database.database,
 		port: database.port,
 		options: database.options
 	});
