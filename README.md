@@ -146,7 +146,7 @@ This is the `initializeConnection` function.
     		user: database.user,
     		password: database.password,
     		host: database.server,
-    		database: config.database.database,
+    		database: database.database,
     		port: database.port,
     		options: database.options
     	});
@@ -239,7 +239,7 @@ Of course we will need a function that will fetch data on the database . Add thi
 			    var allUser = {
 			    user_id: recordset[index].user_id,
 			    user_fname: recordset[index].user_fname,
-			    user_lname: recordset[index].user_fname,
+			    user_lname: recordset[index].user_lname,
 			    };
 			    
 			    //push record in allUserList array
@@ -287,8 +287,6 @@ On your `server.js`, we want to load the module that we create. Add this code in
     	console.log('---Main Modules Activated----')
     	}
     })
-
-This is the `loadModule` function
 
     // function for loading modules
     function  loadModules (server, dbConnection, callback) {
@@ -760,6 +758,8 @@ Then, we will use `swaggerUi`  as a middleware with the path `/api-docs`, call s
     server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagger));
 
 The `swagger` in the `swaggerUi.setup` parameter is a JSON file that we will creating.
+
+Note: The code Iinside the `swagger.json` file is enclose with curly braces {}.
 
     "swagger":"2.0",
     
